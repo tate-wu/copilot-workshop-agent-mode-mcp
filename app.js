@@ -6,6 +6,7 @@ const input = document.getElementById('todo-input');
 const list = document.getElementById('todo-list');
 const emptyState = document.getElementById('empty-state');
 const remainingCount = document.getElementById('remaining-count');
+const clearCompletedButton = document.getElementById('clear-completed');
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
 const themeLabel = document.getElementById('theme-label');
@@ -120,6 +121,7 @@ function render() {
     emptyState.textContent = '還沒有任何待辦事項,新增一個吧!';
   }
   remainingCount.textContent = `未完成:${todos.filter((todo) => !todo.completed).length} 項`;
+  clearCompletedButton.disabled = !todos.some((todo) => todo.completed);
 }
 
 // 新增一筆待辦，使用時間與隨機字串組成識別碼。
@@ -196,6 +198,15 @@ list.addEventListener('click', (event) => {
 
   const item = event.target.closest('.todo-item');
   todos = todos.filter((todo) => todo.id !== item.dataset.id);
+  saveTodos();
+  render();
+});
+
+clearCompletedButton.addEventListener('click', () => {
+  if (!todos.some((todo) => todo.completed)) return;
+  if (!window.confirm('確定要清除所有已完成的待辦事項嗎？此操作無法復原。')) return;
+
+  todos = todos.filter((todo) => !todo.completed);
   saveTodos();
   render();
 });
