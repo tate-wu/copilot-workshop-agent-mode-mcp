@@ -125,7 +125,8 @@ h1 {
 .theme-toggle:focus-visible,
 .filter-button:focus-visible,
 .btn-add:focus-visible,
-.btn-delete:focus-visible {
+.btn-delete:focus-visible,
+.btn-clear-completed:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
@@ -288,12 +289,39 @@ h1 {
 }
 
 .app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 22px;
   padding-top: 18px;
   border-top: 1px solid var(--color-border);
   color: var(--color-muted);
   font-size: 0.9rem;
-  text-align: center;
+}
+
+.btn-clear-completed {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-item);
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.btn-clear-completed:hover:not(:disabled) {
+  border-color: var(--color-border-hover);
+  background: var(--color-accent-soft);
+}
+
+.btn-clear-completed:disabled {
+  color: var(--color-muted);
+  cursor: not-allowed;
 }
 
 .sr-only {
