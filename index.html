@@ -10,8 +10,14 @@
 <body>
   <main class="app">
     <header class="app-header">
-      <p class="eyebrow">把每件小事，一一完成</p>
-      <h1>我的待辦清單</h1>
+      <div class="title-group">
+        <p class="eyebrow">把每件小事，一一完成</p>
+        <h1>我的待辦清單</h1>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切換深色模式">
+        <span id="theme-icon" aria-hidden="true">🌙</span>
+        <span id="theme-label">深色模式</span>
+      </button>
     </header>
 
     <form id="todo-form" class="todo-form" autocomplete="off">
@@ -26,6 +32,12 @@
       >
       <button class="btn-add" type="submit">新增</button>
     </form>
+
+    <nav class="filter-bar" aria-label="篩選待辦事項">
+      <button class="filter-button" type="button" data-filter="all" aria-pressed="true">全部</button>
+      <button class="filter-button" type="button" data-filter="active" aria-pressed="false">未完成</button>
+      <button class="filter-button" type="button" data-filter="completed" aria-pressed="false">已完成</button>
+    </nav>
 
     <ul id="todo-list" class="todo-list" aria-live="polite"></ul>
     <p id="empty-state" class="empty-state" hidden>還沒有任何待辦事項,新增一個吧!</p>

@@ -6,8 +6,41 @@ const input = document.getElementById('todo-input');
 const list = document.getElementById('todo-list');
 const emptyState = document.getElementById('empty-state');
 const remainingCount = document.getElementById('remaining-count');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const themeLabel = document.getElementById('theme-label');
+const themeColor = document.querySelector('meta[name="theme-color"]');
+const filterButtons = document.querySelectorAll('.filter-button');
+const THEME_STORAGE_KEY = 'my-todo-theme';
+const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
 
 let todos = loadTodos();
+let activeFilter = 'all';
+let selectedTheme = loadTheme();
+
+// 取得使用者選擇的主題；沒有選擇時使用作業系統設定。
+function loadTheme() {
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    return savedTheme === 'light' || savedTheme === 'dark'
+      ? savedTheme
+      : (systemTheme.matches ? 'dark' : 'light');
+  } catch (error) {
+    console.error('讀取主題設定失敗，將使用作業系統設定。', error);
+    return systemTheme.matches ? 'dark' : 'light';
+  }
+}
+
+// 更新主題外觀與切換按鈕的提示文字。
+function applyTheme(theme) {
+  selectedTheme = theme;
+  document.documentElement.dataset.theme = theme;
+  const isDark = theme === 'dark';
+  themeIcon.textContent = isDark ? '☀️' : '🌙';
+  themeLabel.textContent = isDark ? '淺色模式' : '深色模式';
+  themeToggle.setAttribute('aria-label', isDark ? '切換淺色模式' : '切換深色模式');
+  themeColor.content = getComputedStyle(document.documentElement).getPropertyValue('--color-page').trim();
+}
 
 // 讀取並檢查已儲存的資料，避免損壞的內容影響清單。
 function loadTodos() {
@@ -41,11 +74,17 @@ function saveTodos() {
   }
 }
 
-// 依照目前資料更新待辦項目、空清單提示與未完成數量。
+// 依照目前篩選條件更新清單，未完成數量則固定統計全部待辦。
 function render() {
   list.replaceChildren();
 
-  todos.forEach((todo) => {
+  const visibleTodos = todos.filter((todo) => {
+    if (activeFilter === 'active') return !todo.completed;
+    if (activeFilter === 'completed') return todo.completed;
+    return true;
+  });
+
+  visibleTodos.forEach((todo) => {
     const item = document.createElement('li');
     item.className = todo.completed ? 'todo-item completed' : 'todo-item';
     item.dataset.id = todo.id;
@@ -70,7 +109,14 @@ function render() {
     list.append(item);
   });
 
-  emptyState.hidden = todos.length > 0;
+  emptyState.hidden = visibleTodos.length > 0;
+  if (activeFilter === 'active') {
+    emptyState.textContent = '沒有未完成的待辦事項。';
+  } else if (activeFilter === 'completed') {
+    emptyState.textContent = '還沒有已完成的待辦事項。';
+  } else {
+    emptyState.textContent = '還沒有任何待辦事項,新增一個吧!';
+  }
   remainingCount.textContent = `未完成:${todos.filter((todo) => !todo.completed).length} 項`;
 }
 
@@ -96,6 +142,41 @@ form.addEventListener('submit', (event) => {
   input.focus();
 });
 
+themeToggle.addEventListener('click', () => {
+  const nextTheme = selectedTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
+
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  } catch (error) {
+    console.error('儲存主題設定失敗。', error);
+    window.alert('無法儲存主題設定，請確認瀏覽器允許使用本機儲存空間。');
+  }
+});
+
+// 尚未手動選擇主題時，作業系統設定變更會同步更新外觀。
+systemTheme.addEventListener('change', (event) => {
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme !== 'light' && savedTheme !== 'dark') {
+      applyTheme(event.matches ? 'dark' : 'light');
+    }
+  } catch (error) {
+    console.error('檢查主題設定失敗，將同步作業系統設定。', error);
+    applyTheme(event.matches ? 'dark' : 'light');
+  }
+});
+
+filterButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    activeFilter = button.dataset.filter;
+    filterButtons.forEach((filterButton) => {
+      filterButton.setAttribute('aria-pressed', String(filterButton === button));
+    });
+    render();
+  });
+});
+
 list.addEventListener('change', (event) => {
   if (!event.target.matches('.todo-checkbox')) return;
 
@@ -117,4 +198,5 @@ list.addEventListener('click', (event) => {
   render();
 });
 
+applyTheme(selectedTheme);
 render();

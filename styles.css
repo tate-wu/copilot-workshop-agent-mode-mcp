@@ -1,15 +1,47 @@
 :root {
-  color-scheme: light;
+  color-scheme: var(--color-scheme);
+  --color-scheme: light;
   --color-page: #f3f5f8;
+  --color-page-glow: #e8edff;
   --color-card: #ffffff;
   --color-text: #263248;
   --color-muted: #8590a3;
   --color-border: #e6eaf0;
+  --color-border-hover: #d4dcef;
   --color-accent: #5575e8;
   --color-accent-hover: #3f5fcf;
+  --color-accent-soft: rgb(85 117 232 / 14%);
   --color-danger: #d65b69;
+  --color-danger-soft: #fff0f1;
   --color-item: #f8f9fc;
+  --color-input: #ffffff;
+  --color-placeholder: #aab2c0;
+  --color-filter-active: #eef1ff;
+  --color-filter-active-border: #cbd4ff;
   --shadow-card: 0 18px 48px rgb(34 51 84 / 9%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-scheme: dark;
+  --color-page: #171b24;
+  --color-page-glow: #252d45;
+  --color-card: #222834;
+  --color-text: #e8ecf4;
+  --color-muted: #a0a9ba;
+  --color-border: #3a4353;
+  --color-border-hover: #53617a;
+  --color-accent: #8da5ff;
+  --color-accent-hover: #a6b8ff;
+  --color-accent-soft: rgb(141 165 255 / 20%);
+  --color-danger: #ff8e9a;
+  --color-danger-soft: #482b35;
+  --color-item: #292f3c;
+  --color-input: #1c222d;
+  --color-placeholder: #8993a5;
+  --color-filter-active: #333d5b;
+  --color-filter-active-border: #596da9;
+  --shadow-card: 0 18px 48px rgb(0 0 0 / 28%);
 }
 
 * {
@@ -24,10 +56,11 @@ body {
   margin: 0;
   padding: 72px 20px 40px;
   background:
-    radial-gradient(ellipse at 50% 0%, #e8edff 0, transparent 48%),
+    radial-gradient(ellipse at 50% 0%, var(--color-page-glow) 0, transparent 48%),
     var(--color-page);
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 .app {
@@ -41,8 +74,15 @@ body {
 }
 
 .app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 28px;
-  text-align: center;
+}
+
+.title-group {
+  min-width: 0;
 }
 
 .eyebrow {
@@ -59,6 +99,37 @@ h1 {
   letter-spacing: 0.04em;
 }
 
+.theme-toggle {
+  display: inline-flex;
+  min-height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-item);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-border-hover);
+}
+
+.theme-toggle:focus-visible,
+.filter-button:focus-visible,
+.btn-add:focus-visible,
+.btn-delete:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .todo-form {
   display: flex;
   gap: 10px;
@@ -72,19 +143,19 @@ h1 {
   border: 1px solid var(--color-border);
   border-radius: 10px;
   outline: none;
-  background: #fff;
+  background: var(--color-input);
   color: var(--color-text);
   font: inherit;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .todo-input::placeholder {
-  color: #aab2c0;
+  color: var(--color-placeholder);
 }
 
 .todo-input:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgb(85 117 232 / 14%);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .btn-add {
@@ -103,6 +174,36 @@ h1 {
 .btn-add:hover {
   transform: translateY(-1px);
   background: var(--color-accent-hover);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin: -4px 0 18px;
+}
+
+.filter-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.filter-button:hover {
+  color: var(--color-text);
+}
+
+.filter-button[aria-pressed="true"] {
+  border-color: var(--color-filter-active-border);
+  background: var(--color-filter-active);
+  color: var(--color-accent);
+  font-weight: 700;
 }
 
 .todo-list {
@@ -127,7 +228,7 @@ h1 {
 }
 
 .todo-item:hover {
-  border-color: #d4dcef;
+  border-color: var(--color-border-hover);
 }
 
 .todo-checkbox {
@@ -171,7 +272,7 @@ h1 {
 }
 
 .btn-delete:hover {
-  background: #fff0f1;
+  background: var(--color-danger-soft);
   color: var(--color-danger);
 }
 
@@ -217,6 +318,18 @@ h1 {
 }
 
 @media (max-width: 360px) {
+  .app-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .theme-toggle {
+    min-height: 36px;
+    gap: 5px;
+    padding-inline: 8px;
+    font-size: 0.75rem;
+  }
+
   .todo-form {
     gap: 7px;
   }
